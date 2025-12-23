@@ -35,6 +35,11 @@ export class CompaniesController {
       : this.companiesService.findAll();
   }
 
+  @Get(':id')
+  async findAllById(@Param('id') id: number) {
+    return this.companiesService.findOneById(id);
+  }
+
   @Post()
   async create(@Body() createCompanyDto: CreateCompanyDto): Promise<Company> {
     return this.companiesService.create(createCompanyDto);
