@@ -10,8 +10,8 @@ import {
 } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { CompaniesService } from './companies.service';
-import { Company } from './interfaces/company.interface';
 import { CompanyFiltersInterface } from './interfaces/company-filters.interface';
+import { Company } from './schemas/company.schema';
 
 @Controller('companies')
 export class CompaniesController {
@@ -36,7 +36,7 @@ export class CompaniesController {
   }
 
   @Get(':id')
-  async findAllById(@Param('id') id: number) {
+  async findOneById(@Param('id') id: number) {
     return this.companiesService.findOneById(id);
   }
 

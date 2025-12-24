@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
-import { companiesProviders } from './companies.providers';
-import { DatabaseModule } from '../database/database.module';
 import { CompaniesController } from './companies.controller';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Company, CompanySchema } from './schemas/company.schema';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [
+    MongooseModule.forFeature([{ name: Company.name, schema: CompanySchema }]),
+  ],
   controllers: [CompaniesController],
-  providers: [CompaniesService, ...companiesProviders],
+  providers: [CompaniesService],
 })
 export class CompaniesModule {}

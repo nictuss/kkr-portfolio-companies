@@ -1,9 +1,24 @@
-import * as mongoose from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
 
-export const CompanySchema = new mongoose.Schema({
-  id: Number,
-  name: String,
-  assetClass: String,
-  industry: String,
-  regionDistribution: String,
-});
+export type CompanyDocument = HydratedDocument<Company>;
+
+@Schema()
+export class Company {
+  @Prop()
+  id: number;
+
+  @Prop()
+  name: string;
+
+  @Prop()
+  assetClass: string;
+
+  @Prop()
+  industry: string;
+
+  @Prop()
+  regionDistribution: string;
+}
+
+export const CompanySchema = SchemaFactory.createForClass(Company);

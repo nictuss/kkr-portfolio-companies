@@ -1,16 +1,15 @@
 import { Model } from 'mongoose';
-import { Inject, Injectable, Logger } from '@nestjs/common';
-import { Company } from './interfaces/company.interface';
-import { COMPANY_MODEL } from '../constants';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { CompanyFiltersInterface } from './interfaces/company-filters.interface';
+import { Company } from './schemas/company.schema';
+import { InjectModel } from '@nestjs/mongoose';
 
 @Injectable()
 export class CompaniesService {
   private logger: Logger;
   constructor(
-    @Inject(COMPANY_MODEL)
-    private companyModel: Model<Company>,
+    @InjectModel(Company.name) private readonly companyModel: Model<Company>,
   ) {
     this.logger = new Logger();
   }
@@ -19,8 +18,7 @@ export class CompaniesService {
     this.logger.verbose(
       `Creating company with params ${JSON.stringify(createCompanyDto)}`,
     );
-    const createdCompany = new this.companyModel(createCompanyDto);
-    return await createdCompany.save();
+    return this.companyModel.create(createCompanyDto);
   }
 
   async findAll(filter?: CompanyFiltersInterface): Promise<Company[]> {
