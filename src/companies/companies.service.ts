@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Model, MongooseBulkWriteResult } from 'mongoose';
 import { Injectable, Logger } from '@nestjs/common';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { CompanyFiltersInterface } from './interfaces/company-filters.interface';
@@ -21,9 +21,17 @@ export class CompaniesService {
     return this.companyModel.create(createCompanyDto);
   }
 
-  async bulkCreate(createCompanyDtos: CreateCompanyDto[]): Promise<Company[]> {
+  async bulkCreate(companies: Company[]): Promise<MongooseBulkWriteResult> {
     this.logger.verbose(`Bulk creating companies`);
-    return this.companyModel.create(createCompanyDtos);
+    const bulkOps = companies.map((company) => ({
+      updateOne: {
+        filter: { sequenceNumber: company.sequenceNumber },
+        update: { $set: company },
+        upsert: true,
+      },
+    }));
+
+    return this.companyModel.bulkWrite(bulkOps);
   }
 
   async findAll(filter?: CompanyFiltersInterface): Promise<Company[]> {

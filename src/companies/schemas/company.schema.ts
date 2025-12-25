@@ -29,6 +29,9 @@ export class Company {
   @Prop()
   regionDistribution: string;
 
+  @Prop()
+  relatedLinks: string[];
+
   @Prop({ type: Date })
   lastUpdate: Date;
 }

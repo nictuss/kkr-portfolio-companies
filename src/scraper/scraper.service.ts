@@ -22,9 +22,8 @@ export class ScraperService {
     const companies = await this.getTableData(page);
     await this.browserService.closePage(page);
     this.logger.debug(`Retrieved info about ${companies.length} companies`);
-    console.log(companies.map((company) => company.lastUpdate));
     const createdData = await this.companiesService.bulkCreate(companies);
-    return !!createdData?.length;
+    return createdData.isOk();
   }
 
   private async acceptCookies(page: Page) {
@@ -132,11 +131,9 @@ export class ScraperService {
             .map((linkDiv) => {
               const link = linkDiv.querySelector('a');
               if (!link) return null;
-              const href = link.getAttribute('href');
-              const text = link.textContent?.trim() || '';
-              return { text, url: href };
+              return link.getAttribute('href') || null;
             })
-            .filter((link) => !!link);
+            .filter((link) => !!link) as string[];
 
           const closeBtn = document.querySelector(
             '.cmp-portfolio-filter__close-btn',
