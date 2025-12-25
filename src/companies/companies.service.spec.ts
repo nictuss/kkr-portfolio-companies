@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { CompaniesService } from './companies.service';
-import { CreateCompanyDto } from './dto/create-company.dto';
 import { CompanyFiltersInterface } from './interfaces/company-filters.interface';
 import { getModelToken } from '@nestjs/mongoose';
 import { Company } from './schemas/company.schema';
@@ -8,20 +7,40 @@ import { Company } from './schemas/company.schema';
 describe('CompaniesService', () => {
   let service: CompaniesService;
 
-  const mockCompany = {
+  const now = new Date();
+
+  const mockCompany: Company = {
     sequenceNumber: 1,
     name: 'Test Company',
     assetClass: 'Equity',
     industry: 'Technology',
     regionDistribution: 'North America',
+    description: 'Test description',
+    logoSrc: 'https://kkr/logo.png',
+    headQuarter: 'Rome, Italy',
+    website: 'https://kkr.com',
+    relatedLinks: ['https://google.com'],
+    lastUpdate: now,
+  };
+
+  const mockCompany2: Company = {
+    sequenceNumber: 2,
+    name: 'Test Company',
+    assetClass: 'Equity',
+    industry: 'Technology',
+    regionDistribution: 'North America',
+    description: '',
+    logoSrc: '',
+    headQuarter: '',
+    website: '',
+    relatedLinks: [],
+    lastUpdate: now,
   };
 
   const mockCompanyModel = {
     find: jest.fn(),
-    findOne: jest.fn(),
     updateOne: jest.fn(),
-    deleteOne: jest.fn(),
-    create: jest.fn(),
+    bulkWrite: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -46,37 +65,72 @@ describe('CompaniesService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('create', () => {
+  describe('bulkCreate', () => {
     it('should create a new company', async () => {
-      const createCompanyDto: CreateCompanyDto = {
-        name: 'New Company',
-        assetClass: 'Equity',
-        industry: 'Finance',
-        regionDistribution: 'Europe',
-      };
+      const companyToCreate: Company[] = [mockCompany];
 
-      const createMock = jest.fn().mockResolvedValue(mockCompany);
-      mockCompanyModel.create = createMock;
+      const upsertMock = jest.fn().mockResolvedValue({ isOk: () => true });
+      mockCompanyModel.bulkWrite = upsertMock;
 
-      const result = await service.create(createCompanyDto);
+      await service.bulkCreate(companyToCreate);
 
-      expect(createMock).toHaveBeenCalled();
-      expect(result).toEqual(mockCompany);
+      expect(upsertMock).toHaveBeenCalledTimes(1);
+      expect(upsertMock).toHaveBeenCalledWith([
+        {
+          updateOne: {
+            filter: { sequenceNumber: 1 },
+            update: { $set: mockCompany },
+            upsert: true,
+          },
+        },
+      ]);
+    });
+
+    it('should create two new companies', async () => {
+      const companiesToCreate: Company[] = [mockCompany, mockCompany2];
+
+      const upsertMock = jest.fn().mockResolvedValue({ isOk: () => true });
+      mockCompanyModel.bulkWrite = upsertMock;
+
+      await service.bulkCreate(companiesToCreate);
+
+      expect(upsertMock).toHaveBeenCalledTimes(1);
+      expect(upsertMock).toHaveBeenCalledWith([
+        {
+          updateOne: {
+            filter: { sequenceNumber: 1 },
+            update: { $set: mockCompany },
+            upsert: true,
+          },
+        },
+        {
+          updateOne: {
+            filter: { sequenceNumber: 2 },
+            update: { $set: mockCompany2 },
+            upsert: true,
+          },
+        },
+      ]);
+    });
+
+    it('should not create a new company', async () => {
+      const companiesToCreate: Company[] = [];
+
+      const upsertMock = jest.fn().mockResolvedValue({ isOk: () => false });
+      mockCompanyModel.bulkWrite = upsertMock;
+
+      await service.bulkCreate(companiesToCreate);
+
+      expect(upsertMock).toHaveBeenCalledTimes(1);
+      expect(upsertMock).toHaveBeenCalledWith([]);
     });
 
     it('should throw error when save fails', async () => {
-      const createCompanyDto: CreateCompanyDto = {
-        name: 'New Company',
-        assetClass: 'Equity',
-        industry: 'Finance',
-        regionDistribution: 'Europe',
-      };
-
-      mockCompanyModel.create = jest
+      mockCompanyModel.bulkWrite = jest
         .fn()
         .mockRejectedValue(new Error('Database error'));
 
-      await expect(service.create(createCompanyDto)).rejects.toThrow(
+      await expect(service.bulkCreate([mockCompany])).rejects.toThrow(
         new Error('Database error'),
       );
     });
@@ -129,128 +183,6 @@ describe('CompaniesService', () => {
       mockCompanyModel.find.mockReturnValue({ exec: execMock });
 
       await expect(service.findAll()).rejects.toThrow('Database error');
-    });
-  });
-
-  describe('findOneBySequenceNumber', () => {
-    it('should return a company by sequenceNumber', async () => {
-      const execMock = jest.fn().mockResolvedValue(mockCompany);
-      mockCompanyModel.findOne.mockReturnValue({ exec: execMock });
-
-      const result = await service.findOneBySequenceNumber(1);
-
-      expect(mockCompanyModel.findOne).toHaveBeenCalledWith({
-        filter: { sequenceNumber: 1 },
-      });
-      expect(execMock).toHaveBeenCalled();
-      expect(result).toEqual(mockCompany);
-    });
-
-    it('should return null when company not found', async () => {
-      const execMock = jest.fn().mockResolvedValue(null);
-      mockCompanyModel.findOne.mockReturnValue({ exec: execMock });
-
-      const result = await service.findOneBySequenceNumber(999);
-
-      expect(mockCompanyModel.findOne).toHaveBeenCalledWith({
-        filter: { sequenceNumber: 999 },
-      });
-      expect(result).toBeNull();
-    });
-
-    it('should throw error when findOne fails', async () => {
-      const execMock = jest.fn().mockRejectedValue(new Error('Database error'));
-      mockCompanyModel.findOne.mockReturnValue({ exec: execMock });
-
-      await expect(service.findOneBySequenceNumber(1)).rejects.toThrow(
-        'Database error',
-      );
-    });
-  });
-
-  describe('update', () => {
-    it('should update a company and return upserted count', async () => {
-      const updateDto: CreateCompanyDto = {
-        name: 'Updated Company',
-        assetClass: 'Equity',
-        industry: 'Finance',
-        regionDistribution: 'Asia',
-      };
-      const updateResult = { upsertedCount: 1 };
-      mockCompanyModel.updateOne.mockResolvedValue(updateResult);
-
-      const result = await service.update(1, updateDto);
-
-      expect(mockCompanyModel.updateOne).toHaveBeenCalledWith(
-        { filter: { sequenceNumber: 1 } },
-        updateDto,
-      );
-      expect(result).toBe(1);
-    });
-
-    it('should return 0 when no company updated', async () => {
-      const updateDto: CreateCompanyDto = {
-        name: 'Updated Company',
-        assetClass: 'Equity',
-        industry: 'Finance',
-        regionDistribution: 'Asia',
-      };
-      const updateResult = { upsertedCount: 0 };
-      mockCompanyModel.updateOne.mockResolvedValue(updateResult);
-
-      const result = await service.update(999, updateDto);
-
-      expect(mockCompanyModel.updateOne).toHaveBeenCalledWith(
-        { filter: { sequenceNumber: 999 } },
-        updateDto,
-      );
-      expect(result).toBe(0);
-    });
-
-    it('should throw error when update fails', async () => {
-      const updateDto: CreateCompanyDto = {
-        name: 'Updated Company',
-        assetClass: 'Equity',
-        industry: 'Finance',
-        regionDistribution: 'Asia',
-      };
-      mockCompanyModel.updateOne.mockRejectedValue(new Error('Database error'));
-
-      await expect(service.update(1, updateDto)).rejects.toThrow(
-        'Database error',
-      );
-    });
-  });
-
-  describe('delete', () => {
-    it('should delete a company and return deleted count', async () => {
-      const deleteResult = { deletedCount: 1 };
-      mockCompanyModel.deleteOne.mockResolvedValue(deleteResult);
-
-      const result = await service.delete(1);
-
-      expect(mockCompanyModel.deleteOne).toHaveBeenCalledWith({
-        filter: { sequenceNumber: 1 },
-      });
-      expect(result).toBe(1);
-    });
-
-    it('should return 0 when no company deleted', async () => {
-      const deleteResult = { deletedCount: 0 };
-      mockCompanyModel.deleteOne.mockResolvedValue(deleteResult);
-
-      const result = await service.delete(999);
-
-      expect(mockCompanyModel.deleteOne).toHaveBeenCalledWith({
-        filter: { sequenceNumber: 999 },
-      });
-      expect(result).toBe(0);
-    });
-
-    it('should throw error when delete fails', async () => {
-      mockCompanyModel.deleteOne.mockRejectedValue(new Error('Database error'));
-
-      await expect(service.delete(1)).rejects.toThrow('Database error');
     });
   });
 });
