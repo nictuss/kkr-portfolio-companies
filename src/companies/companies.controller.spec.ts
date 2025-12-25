@@ -6,7 +6,7 @@ import { Company } from './schemas/company.schema';
 
 const mockCompaniesService = {
   findAll: jest.fn(),
-  findOneById: jest.fn(),
+  findOneBySequenceNumber: jest.fn(),
   create: jest.fn(),
   update: jest.fn(),
   delete: jest.fn(),
@@ -40,8 +40,8 @@ describe('CompaniesController', () => {
   describe('findAll', () => {
     it('should return all companies when no filters provided', async () => {
       const mockCompanies: Company[] = [
-        { id: 1, name: 'Company 1' } as unknown as Company,
-        { id: 2, name: 'Company 2' } as unknown as Company,
+        { sequenceNumber: 1, name: 'Company 1' } as unknown as Company,
+        { sequenceNumber: 2, name: 'Company 2' } as unknown as Company,
       ];
       const findAllSpy = jest.spyOn(service, 'findAll');
       findAllSpy.mockResolvedValue(mockCompanies);
@@ -55,7 +55,7 @@ describe('CompaniesController', () => {
 
     it('should return filtered companies with all query params', async () => {
       const mockCompanies: Company[] = [
-        { id: 1, name: 'Filtered' } as unknown as Company,
+        { sequenceNumber: 1, name: 'Filtered' } as unknown as Company,
       ];
       const findAllSpy = jest.spyOn(service, 'findAll');
       findAllSpy.mockResolvedValue(mockCompanies);
@@ -79,7 +79,7 @@ describe('CompaniesController', () => {
 
     it('should return companies with only name filter', async () => {
       const mockCompanies: Company[] = [
-        { id: 1, name: 'Test' } as unknown as Company,
+        { sequenceNumber: 1, name: 'Test' } as unknown as Company,
       ];
       const findAllSpy = jest.spyOn(service, 'findAll');
       findAllSpy.mockResolvedValue(mockCompanies);
@@ -106,27 +106,30 @@ describe('CompaniesController', () => {
     });
   });
 
-  describe('findOneById', () => {
-    it('should return a company by id', async () => {
+  describe('findOneBySequenceNumber', () => {
+    it('should return a company by sequenceNumber', async () => {
       const mockCompany: Company = {
-        id: 1,
+        sequenceNumber: 1,
         name: 'Test Company',
       } as unknown as Company;
-      const findOneByIdSpy = jest.spyOn(service, 'findOneById');
-      findOneByIdSpy.mockResolvedValue(mockCompany);
+      const findOneBySequenceNumberSpy = jest.spyOn(
+        service,
+        'findOneBySequenceNumber',
+      );
+      findOneBySequenceNumberSpy.mockResolvedValue(mockCompany);
 
-      const result = await controller.findOneById(1);
+      const result = await controller.findOneBySequenceNumber(1);
 
-      expect(findOneByIdSpy).toHaveBeenCalledTimes(1);
-      expect(findOneByIdSpy).toHaveBeenCalledWith(1);
+      expect(findOneBySequenceNumberSpy).toHaveBeenCalledTimes(1);
+      expect(findOneBySequenceNumberSpy).toHaveBeenCalledWith(1);
       expect(result).toEqual(mockCompany);
     });
 
     it('should throw error when company not found', async () => {
       jest
-        .spyOn(service, 'findOneById')
+        .spyOn(service, 'findOneBySequenceNumber')
         .mockRejectedValue(new Error('Company not found'));
-      await expect(controller.findOneById(999)).rejects.toThrow(
+      await expect(controller.findOneBySequenceNumber(999)).rejects.toThrow(
         'Company not found',
       );
     });
@@ -141,7 +144,7 @@ describe('CompaniesController', () => {
         regionDistribution: 'North America',
       };
       const mockCreatedCompany: Company = {
-        id: 1,
+        sequenceNumber: 1,
         ...createCompanyDto,
       } as unknown as Company;
       const createSpy = jest.spyOn(service, 'create');

@@ -21,6 +21,11 @@ export class CompaniesService {
     return this.companyModel.create(createCompanyDto);
   }
 
+  async bulkCreate(createCompanyDtos: CreateCompanyDto[]): Promise<Company[]> {
+    this.logger.verbose(`Bulk creating companies`);
+    return this.companyModel.create(createCompanyDtos);
+  }
+
   async findAll(filter?: CompanyFiltersInterface): Promise<Company[]> {
     if (filter) {
       this.logger.verbose(
@@ -32,23 +37,36 @@ export class CompaniesService {
     }
   }
 
-  async findOneById(id: number): Promise<Company | null> {
-    this.logger.verbose(`Finding company with id ${id}`);
-    return this.companyModel.findOne({ filter: { id } }).exec();
+  async findOneBySequenceNumber(
+    sequenceNumber: number,
+  ): Promise<Company | null> {
+    this.logger.verbose(
+      `Finding company with sequenceNumber ${sequenceNumber}`,
+    );
+    return this.companyModel.findOne({ filter: { sequenceNumber } }).exec();
   }
 
-  async update(id: number, companyDto: CreateCompanyDto): Promise<number> {
-    this.logger.verbose(`Updating company with id ${id}`);
+  async update(
+    sequenceNumber: number,
+    companyDto: CreateCompanyDto,
+  ): Promise<number> {
+    this.logger.verbose(
+      `Updating company with sequenceNumber ${sequenceNumber}`,
+    );
     const updated = await this.companyModel.updateOne(
-      { filter: { id } },
+      { filter: { sequenceNumber } },
       companyDto,
     );
     return updated.upsertedCount;
   }
 
-  async delete(id: number): Promise<number> {
-    this.logger.verbose(`Deleting company with id ${id}`);
-    const deleted = await this.companyModel.deleteOne({ filter: { id } });
+  async delete(sequenceNumber: number): Promise<number> {
+    this.logger.verbose(
+      `Deleting company with sequenceNumber ${sequenceNumber}`,
+    );
+    const deleted = await this.companyModel.deleteOne({
+      filter: { sequenceNumber },
+    });
     return deleted.deletedCount;
   }
 }

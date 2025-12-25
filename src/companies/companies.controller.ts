@@ -35,9 +35,11 @@ export class CompaniesController {
       : this.companiesService.findAll();
   }
 
-  @Get(':id')
-  async findOneById(@Param('id') id: number) {
-    return this.companiesService.findOneById(id);
+  @Get(':sequenceNumber')
+  async findOneBySequenceNumber(
+    @Param('sequenceNumber') sequenceNumber: number,
+  ) {
+    return this.companiesService.findOneBySequenceNumber(sequenceNumber);
   }
 
   @Post()
@@ -45,16 +47,18 @@ export class CompaniesController {
     return this.companiesService.create(createCompanyDto);
   }
 
-  @Put(':id')
+  @Put(':sequenceNumber')
   async update(
-    @Param('id') id: number,
+    @Param('sequenceNumber') sequenceNumber: number,
     @Body() createCompanyDto: CreateCompanyDto,
   ): Promise<number> {
-    return this.companiesService.update(id, createCompanyDto);
+    return this.companiesService.update(sequenceNumber, createCompanyDto);
   }
 
-  @Delete(':id')
-  async delete(@Param('id') id: number): Promise<number> {
-    return this.companiesService.delete(id);
+  @Delete(':sequenceNumber')
+  async delete(
+    @Param('sequenceNumber') sequenceNumber: number,
+  ): Promise<number> {
+    return this.companiesService.delete(sequenceNumber);
   }
 }

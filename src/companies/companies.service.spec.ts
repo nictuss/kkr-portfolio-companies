@@ -9,7 +9,7 @@ describe('CompaniesService', () => {
   let service: CompaniesService;
 
   const mockCompany = {
-    id: 1,
+    sequenceNumber: 1,
     name: 'Test Company',
     assetClass: 'Equity',
     industry: 'Technology',
@@ -84,7 +84,10 @@ describe('CompaniesService', () => {
 
   describe('findAll', () => {
     it('should return all companies when no filter provided', async () => {
-      const mockCompanies = [mockCompany, { ...mockCompany, id: 2 }];
+      const mockCompanies = [
+        mockCompany,
+        { ...mockCompany, sequenceNumber: 2 },
+      ];
       const execMock = jest.fn().mockResolvedValue(mockCompanies);
       mockCompanyModel.find.mockReturnValue({ exec: execMock });
 
@@ -129,15 +132,15 @@ describe('CompaniesService', () => {
     });
   });
 
-  describe('findOneById', () => {
-    it('should return a company by id', async () => {
+  describe('findOneBySequenceNumber', () => {
+    it('should return a company by sequenceNumber', async () => {
       const execMock = jest.fn().mockResolvedValue(mockCompany);
       mockCompanyModel.findOne.mockReturnValue({ exec: execMock });
 
-      const result = await service.findOneById(1);
+      const result = await service.findOneBySequenceNumber(1);
 
       expect(mockCompanyModel.findOne).toHaveBeenCalledWith({
-        filter: { id: 1 },
+        filter: { sequenceNumber: 1 },
       });
       expect(execMock).toHaveBeenCalled();
       expect(result).toEqual(mockCompany);
@@ -147,10 +150,10 @@ describe('CompaniesService', () => {
       const execMock = jest.fn().mockResolvedValue(null);
       mockCompanyModel.findOne.mockReturnValue({ exec: execMock });
 
-      const result = await service.findOneById(999);
+      const result = await service.findOneBySequenceNumber(999);
 
       expect(mockCompanyModel.findOne).toHaveBeenCalledWith({
-        filter: { id: 999 },
+        filter: { sequenceNumber: 999 },
       });
       expect(result).toBeNull();
     });
@@ -159,7 +162,9 @@ describe('CompaniesService', () => {
       const execMock = jest.fn().mockRejectedValue(new Error('Database error'));
       mockCompanyModel.findOne.mockReturnValue({ exec: execMock });
 
-      await expect(service.findOneById(1)).rejects.toThrow('Database error');
+      await expect(service.findOneBySequenceNumber(1)).rejects.toThrow(
+        'Database error',
+      );
     });
   });
 
@@ -177,7 +182,7 @@ describe('CompaniesService', () => {
       const result = await service.update(1, updateDto);
 
       expect(mockCompanyModel.updateOne).toHaveBeenCalledWith(
-        { filter: { id: 1 } },
+        { filter: { sequenceNumber: 1 } },
         updateDto,
       );
       expect(result).toBe(1);
@@ -196,7 +201,7 @@ describe('CompaniesService', () => {
       const result = await service.update(999, updateDto);
 
       expect(mockCompanyModel.updateOne).toHaveBeenCalledWith(
-        { filter: { id: 999 } },
+        { filter: { sequenceNumber: 999 } },
         updateDto,
       );
       expect(result).toBe(0);
@@ -225,7 +230,7 @@ describe('CompaniesService', () => {
       const result = await service.delete(1);
 
       expect(mockCompanyModel.deleteOne).toHaveBeenCalledWith({
-        filter: { id: 1 },
+        filter: { sequenceNumber: 1 },
       });
       expect(result).toBe(1);
     });
@@ -237,7 +242,7 @@ describe('CompaniesService', () => {
       const result = await service.delete(999);
 
       expect(mockCompanyModel.deleteOne).toHaveBeenCalledWith({
-        filter: { id: 999 },
+        filter: { sequenceNumber: 999 },
       });
       expect(result).toBe(0);
     });
