@@ -5,8 +5,14 @@ import { ScraperService } from './scraper.service';
 export class ScraperController {
   constructor(private scraperService: ScraperService) {}
 
-  @Post()
+  @Post('companies')
   public async updateData() {
-    return this.scraperService.updateData();
+    const success = await this.scraperService.updateCompaniesData();
+    return {
+      success,
+      message: success
+        ? 'Company data scraped with success'
+        : 'Something went wrong while scraping company data',
+    };
   }
 }

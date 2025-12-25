@@ -7,18 +7,20 @@ import { CompaniesService } from '../companies/companies.service';
 @Injectable()
 export class ScraperService {
   private logger: Logger;
+  private cookiesAccepted: boolean;
   constructor(
     private browserService: BrowserService,
     private companiesService: CompaniesService,
   ) {
     this.logger = new Logger();
+    this.cookiesAccepted = false;
   }
 
-  public async updateData(): Promise<boolean> {
+  public async updateCompaniesData(): Promise<boolean> {
     this.logger.debug('Scraping website...');
     const page = await this.browserService.createPage();
     await page.goto('https://www.kkr.com/invest/portfolio');
-    await this.acceptCookies(page);
+    if (!this.cookiesAccepted) await this.acceptCookies(page);
     const companies = await this.getTableData(page);
     await this.browserService.closePage(page);
     this.logger.debug(`Retrieved info about ${companies.length} companies`);
@@ -125,12 +127,15 @@ export class ScraperService {
 
           const relatedLinks = Array.from(
             modal?.querySelectorAll(
-              '.cmp-portfolio-filter__additional-details--values a.site-link',
+              '.cmp-portfolio-filter__additional-details--values .sub-desc',
             ) || [],
           )
             .map((linkDiv) => {
-              const link = linkDiv.querySelector('a');
-              if (!link) return null;
+              const link = linkDiv.querySelector('.site-link');
+              const isNotVisible = !!linkDiv
+                ?.getAttribute('style')
+                ?.includes('none');
+              if (!link || isNotVisible) return null;
               return link.getAttribute('href') || null;
             })
             .filter((link) => !!link) as string[];
