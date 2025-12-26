@@ -11,15 +11,15 @@ through a REST API.
 
 this is for testing purposes only, data persistence and authentication are intentionally omitted:
 
-```docker run --name mongodb -d -p 27017:27017 mongodb/mongodb-community-server:8.0-ubi8```
+`docker run --name mongodb -d -p 27017:27017 mongodb/mongodb-community-server:8.0-ubi8`
 
 ### Step 2: start the NestJS server:
 
-```npm start```
+`npm start`
 
 The server runs on port 3000, if you want to change this run
 
-```PORT=<port-number> npm start```
+`PORT=<port-number> npm start`
 
 ### Step 3: download Postman collection:
 
@@ -31,7 +31,7 @@ to interact with it.
 
 In the Postman collection you have just downloaded there is a request under
 
-```/scraper/Scrape kkr website```
+`/scraper/Scrape kkr website`
 
 You need to send it to scrape the website and obtain data.
 
@@ -39,7 +39,7 @@ You need to send it to scrape the website and obtain data.
 
 Now you can query the data you obtained through queries under
 
-```/Query API```
+`/Query API`
 
 ## Development
 
@@ -47,6 +47,4 @@ Now you can query the data you obtained through queries under
 
 To run unit tests:
 
-```npm test```
-
-
+`npm test`
