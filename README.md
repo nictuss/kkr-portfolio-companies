@@ -24,7 +24,7 @@ The server runs on port 3000, if you want to change this run
 ### Step 3: download Postman collection:
 
 This application offers a REST API, and a Postman collection is included in this
-repository, [HERE](https://web.postman.co/workspace/My-Workspace~660e655f-3385-4ea0-8653-838af739954b/collection/12567506-c446bacf-4827-42ff-922b-f92e44524748?action=share&source=copy-link&creator=12567506),
+repository, [HERE](https://documenter.getpostman.com/view/12567506/2sBXVZpusz),
 to interact with it.
 
 ### Step 4: scrape kkr website:
