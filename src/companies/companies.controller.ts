@@ -8,20 +8,47 @@ export class CompaniesController {
   constructor(private companiesService: CompaniesService) {}
   @Get()
   async findAll(
+    @Query('_id') _id?: string,
     @Query('name') name?: string,
     @Query('assetClass') assetClass?: string,
+    @Query('description') description?: string,
+    @Query('headQuarter') headQuarter?: string,
+    @Query('sequenceNumber') sequenceNumber?: number,
     @Query('industry') industry?: string,
+    @Query('logoSrc') logoSrc?: string,
     @Query('regionDistribution') regionDistribution?: string,
-  ): Promise<Company[]> {
+    @Query('website') website?: string,
+  ): Promise<{ payload: Company[]; total: number }> {
     const filters: CompanyFiltersInterface = {};
 
-    if (name) filters.name = name;
-    if (assetClass) filters.assetClass = assetClass;
-    if (industry) filters.industry = industry;
-    if (regionDistribution) filters.regionDistribution = regionDistribution;
+    // Helper function to process regex parameters
+    const processParam = (value: string) => {
+      if (value.startsWith('regex:')) {
+        return { $regex: value.slice(6).trim(), $options: 'i' };
+      }
+      return value;
+    };
 
-    return Object.keys(filters).length > 0
-      ? this.companiesService.findAll(filters)
-      : this.companiesService.findAll();
+    if (_id) filters._id = processParam(_id);
+    if (name) filters.name = processParam(name);
+    if (assetClass) filters.assetClass = processParam(assetClass);
+    if (description) filters.description = processParam(description);
+    if (headQuarter) filters.headQuarter = processParam(headQuarter);
+    if (sequenceNumber) filters.sequenceNumber = sequenceNumber;
+    if (industry) filters.industry = processParam(industry);
+    if (logoSrc) filters.logoSrc = processParam(logoSrc);
+    if (regionDistribution)
+      filters.regionDistribution = processParam(regionDistribution);
+    if (website) filters.website = processParam(website);
+
+    const data =
+      Object.keys(filters).length > 0
+        ? await this.companiesService.findAll(filters)
+        : await this.companiesService.findAll();
+
+    return {
+      payload: data,
+      total: data.length,
+    };
   }
 }

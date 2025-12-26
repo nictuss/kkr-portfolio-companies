@@ -26,12 +26,10 @@ export class CompaniesService {
     return this.companyModel.bulkWrite(bulkOps);
   }
 
-  async findAll(filter?: CompanyFiltersInterface): Promise<Company[]> {
-    if (filter) {
-      this.logger.verbose(
-        `Finding companies with filters ${JSON.stringify(filter)}`,
-      );
-      return this.companyModel.find({ filter }).exec();
+  async findAll(filters?: CompanyFiltersInterface): Promise<Company[]> {
+    if (filters) {
+      console.log(filters);
+      return this.companyModel.find(filters).exec();
     } else {
       return this.companyModel.find().exec();
     }
