@@ -70,13 +70,9 @@ export class BrowserService implements OnModuleInit, OnModuleDestroy {
 
   private async close() {
     if (this.browser) {
-      this.logger.log('Closing browser...');
+      this.logger.debug('Closing browser...');
       await this.browser.close();
       this.isInitialized = false;
     }
-  }
-
-  getBrowser(): Browser {
-    return this.browser;
   }
 }
