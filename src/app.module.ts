@@ -2,7 +2,7 @@ import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CompaniesModule } from './companies/companies.module';
-import { LoggerMiddleware } from './middlewares/logger.middleware';
+import { LoggerInterceptor } from './interceptors/logger.interceptor';
 import { MongooseModule } from '@nestjs/mongoose';
 import { BrowserModule } from './browser/browser.module';
 import { ScraperModule } from './scraper/scraper.module';
@@ -17,8 +17,4 @@ import { ScraperModule } from './scraper/scraper.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
-  }
-}
+export class AppModule {}
