@@ -51,6 +51,7 @@ describe('BrowserService', () => {
 
       expect(puppeteerLaunchMock).toHaveBeenCalledWith({
         headless: true,
+        executablePath: '/usr/bin/chromium',
         args: [
           '--no-sandbox',
           '--disable-setuid-sandbox',
