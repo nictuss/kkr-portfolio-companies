@@ -49,7 +49,7 @@ describe('CompaniesController', () => {
 
       expect(findAllSpy).toHaveBeenCalledTimes(1);
       expect(findAllSpy).toHaveBeenCalledWith();
-      expect(result).toEqual(mockCompanies);
+      expect(result).toEqual({ payload: mockCompanies, total: 2 });
     });
 
     it('should return filtered companies with all query params', async () => {
@@ -60,20 +60,32 @@ describe('CompaniesController', () => {
       findAllSpy.mockResolvedValue(mockCompanies);
 
       const result = await controller.findAll(
+        '_id',
         'name',
         'assetClass',
+        'description',
+        'headQuarter',
+        1,
         'industry',
+        'logoSrc',
         'regionDistribution',
+        'website',
       );
 
       expect(findAllSpy).toHaveBeenCalledTimes(1);
       expect(findAllSpy).toHaveBeenCalledWith({
+        _id: '_id',
         name: 'name',
         assetClass: 'assetClass',
+        description: 'description',
+        headQuarter: 'headQuarter',
+        sequenceNumber: 1,
         industry: 'industry',
+        logoSrc: 'logoSrc',
         regionDistribution: 'regionDistribution',
+        website: 'website',
       });
-      expect(result).toEqual(mockCompanies);
+      expect(result).toEqual({ payload: mockCompanies, total: 1 });
     });
 
     it('should return companies with only name filter', async () => {
@@ -84,17 +96,18 @@ describe('CompaniesController', () => {
       findAllSpy.mockResolvedValue(mockCompanies);
 
       const result = await controller.findAll(
+        'id',
         'name',
-        undefined,
         undefined,
         undefined,
       );
 
       expect(findAllSpy).toHaveBeenCalledTimes(1);
       expect(findAllSpy).toHaveBeenCalledWith({
+        _id: 'id',
         name: 'name',
       });
-      expect(result).toEqual(mockCompanies);
+      expect(result).toEqual({ payload: mockCompanies, total: 1 });
     });
 
     it('should throw error when service fails', async () => {

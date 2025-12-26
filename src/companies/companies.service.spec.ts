@@ -153,7 +153,7 @@ describe('CompaniesService', () => {
     });
 
     it('should return filtered companies when filter provided', async () => {
-      const filter: CompanyFiltersInterface = {
+      const filters: CompanyFiltersInterface = {
         name: 'Test Company',
         industry: 'Technology',
       };
@@ -161,9 +161,9 @@ describe('CompaniesService', () => {
       const execMock = jest.fn().mockResolvedValue(mockCompanies);
       mockCompanyModel.find.mockReturnValue({ exec: execMock });
 
-      const result = await service.findAll(filter);
+      const result = await service.findAll(filters);
 
-      expect(mockCompanyModel.find).toHaveBeenCalledWith({ filter });
+      expect(mockCompanyModel.find).toHaveBeenCalledWith(filters);
       expect(execMock).toHaveBeenCalled();
       expect(result).toEqual(mockCompanies);
     });

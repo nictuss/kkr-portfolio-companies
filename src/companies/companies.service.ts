@@ -28,7 +28,6 @@ export class CompaniesService {
 
   async findAll(filters?: CompanyFiltersInterface): Promise<Company[]> {
     if (filters) {
-      console.log(filters);
       return this.companyModel.find(filters).exec();
     } else {
       return this.companyModel.find().exec();
