@@ -40,6 +40,7 @@ export class ScraperService {
     } catch (e) {
       this.logger.warn(e);
     }
+    this.cookiesAccepted = true;
     this.logger.debug('Cookies accepted');
   }
 
