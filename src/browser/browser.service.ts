@@ -29,6 +29,7 @@ export class BrowserService implements OnModuleInit, OnModuleDestroy {
       this.logger.debug('Initializing browser...');
 
       this.browser = await puppeteer.launch({
+        executablePath: '/usr/bin/chromium',
         headless: true,
         args: [
           '--no-sandbox',

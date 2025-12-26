@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server:8.0-ubi8
+    container_name: mongodb
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  kkr-portfolio-companies:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: kkr-portfolio-companies
+    ports:
+      - '3000:3000'
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/kkr
+      - NODE_ENV=production
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
+    driver: local
