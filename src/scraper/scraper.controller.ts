@@ -6,7 +6,7 @@ export class ScraperController {
   constructor(private scraperService: ScraperService) {}
 
   @Post('companies')
-  public async updateData() {
+  public async updateCompaniesData() {
     const success = await this.scraperService.updateCompaniesData();
     return {
       success,
