@@ -1,3 +1,9 @@
+## [1.0.2](https://github.com/nictuss/kkr-portfolio-companies/compare/v1.0.1...v1.0.2) (2025-12-27)
+
+### Bug Fixes
+
+- Exported config in env files ([cd3da07](https://github.com/nictuss/kkr-portfolio-companies/commit/cd3da0758c07223e0d816acbdbcf92a517edaf1e))
+
 ## [1.0.1](https://github.com/nictuss/kkr-portfolio-companies/compare/v1.0.0...v1.0.1) (2025-12-26)
 
 ### Bug Fixes
