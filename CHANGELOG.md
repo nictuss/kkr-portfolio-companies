@@ -1,3 +1,9 @@
+## [1.0.1](https://github.com/nictuss/kkr-portfolio-companies/compare/v1.0.0...v1.0.1) (2025-12-26)
+
+### Bug Fixes
+
+- Created a docker compose to run the whole environment ([c447180](https://github.com/nictuss/kkr-portfolio-companies/commit/c44718045066f8a41c5dc38977c539473e247c45))
+
 # 1.0.0 (2025-12-26)
 
 ### Bug Fixes
