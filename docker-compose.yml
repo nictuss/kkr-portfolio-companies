@@ -25,9 +25,8 @@ services:
     depends_on:
       mongodb:
         condition: service_healthy
-    environment:
-      - MONGODB_URI=mongodb://mongodb:27017/kkr
-      - NODE_ENV=production
+    env_file:
+      - .env.local
     restart: unless-stopped
 
 volumes:
