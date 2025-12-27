@@ -67,14 +67,14 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build, tag, and push Docker image
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.node-version == '22.x'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.node-version == '24.x'
         run: |
           docker build -t kkr-portfolio-companies .
           docker tag kkr-portfolio-companies:latest 331064633338.dkr.ecr.us-east-1.amazonaws.com/kkr-portfolio-companies:latest
           docker push 331064633338.dkr.ecr.us-east-1.amazonaws.com/kkr-portfolio-companies:latest
 
       - name: Deploy to ECS
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.node-version == '22.x'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.node-version == '24.x'
         run: |
           aws ecs update-service \
           --cluster kkr-cluster \
