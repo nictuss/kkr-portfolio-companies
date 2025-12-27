@@ -49,5 +49,4 @@ To run unit tests:
 
 ### CI/CD
 
-In this repository there is a CI pipeline that builds the application, runs unit tests and does semantic versioning to
-every commit pushed to the main branch.
+In this repository there is a CI/CD pipeline that builds the application, runs unit tests, does semantic versioning and deploys the application whenever a push is done to the main branch.

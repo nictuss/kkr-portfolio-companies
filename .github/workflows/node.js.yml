@@ -1,6 +1,3 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
 name: Node.js CI
 
 on:
@@ -9,11 +6,10 @@ on:
   pull_request:
     branches: ['main']
 
-# CRITICAL FIX: Add permissions for semantic-release to push tags and create releases
 permissions:
-  contents: write # Required to push commits and tags
-  issues: write # Required to comment on released issues
-  pull-requests: write # Required to comment on released PRs
+  contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
   build:
@@ -52,7 +48,35 @@ jobs:
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
       - name: Semantic Release
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.node-version == '24.x'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run semantic-release
+
+      - name: Configure AWS credentials
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.node-version == '24.x'
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.node-version == '24.x'
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push Docker image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.node-version == '22.x'
+        run: |
+          docker build -t kkr-portfolio-companies .
+          docker tag kkr-portfolio-companies:latest 331064633338.dkr.ecr.us-east-1.amazonaws.com/kkr-portfolio-companies:latest
+          docker push 331064633338.dkr.ecr.us-east-1.amazonaws.com/kkr-portfolio-companies:latest
+
+      - name: Deploy to ECS
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && matrix.node-version == '22.x'
+        run: |
+          aws ecs update-service \
+          --cluster kkr-cluster \
+          --service kkr-service \
+          --force-new-deployment
