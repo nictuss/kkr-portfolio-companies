@@ -29,7 +29,7 @@ To test the deployed application, you need to select the "AWS" Postman environme
 
 The first request you should do in Postman is under
 
-`/scraper/Scrape kkr website`
+`/Scraper API/Scrape kkr website`
 
 You need to send it to scrape the website and gather data.
 
@@ -38,6 +38,8 @@ You need to send it to scrape the website and gather data.
 Now you can query the data you collected through queries under
 
 `/Query API`
+
+You can only perform GET requests and you can filter out results using query string parameters. Mostly al fields (except for "sequenceNumber" and "lastUpdate") of the companies are searchable through exact match or regex, like it is shown in the Postman collection.
 
 ## Development
 
